@@ -86,8 +86,8 @@ class PlatformConfigModel(models.Model):
         return f"{self.platform_name}"
     
 class AiAssistantConfigModel(models.Model):
-    assistant_name = models.Model()
-    ai_behaviour_settings = models.Model()
+    assistant_name = models.CharField(max_length=100)
+    ai_behaviour_settings = models.JSONField(default=dict)
 
     def __str__(self):
-        return f"{self.assistant_name}"
+        return self.assistant_name
