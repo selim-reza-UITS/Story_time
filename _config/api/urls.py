@@ -1,5 +1,6 @@
 from django.urls import path,include
 from app.dashboard import views as admin
+from app.accounts import views as accounts
 
 ADMIN_PATTERN = [
     path("overview/",admin.AdminDashboardView.as_view(),name="adminOverview"),
@@ -17,5 +18,6 @@ ADMIN_PATTERN = [
 ]
 
 urlpatterns = [
+    path("auth/login/", accounts.LoginAPIView.as_view(), name="login"),
     path("site/",include(ADMIN_PATTERN)),
 ]

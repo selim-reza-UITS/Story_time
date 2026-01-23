@@ -73,12 +73,17 @@ class StudentListCreateAPIView(APIView):
     @transaction.atomic
     def post(self, request):
         data = request.data
+        email = data.get('email')
         password = data.get('password')
+
+        # 1. Check if user already exists to avoid another IntegrityError
+        if User.objects.filter(email=email).exists():
+            return Response({"error": "A user with this email already exists."}, status=status.HTTP_400_BAD_REQUEST)
         
-        # 1. Create User
+        # 2. Create User
         user = User.objects.create_user(
-            username=data.get('email'), # Using email as username
-            email=data.get('email'),
+            username=email,
+            email=email,
             first_name=data.get('first_name', ''),
             last_name=data.get('last_name', ''),
             is_student=True
@@ -86,15 +91,22 @@ class StudentListCreateAPIView(APIView):
         user.set_password(password)
         user.save()
 
-        # 2. Create Profile
-        StudentProfile.objects.create(
+        # 3. Use update_or_create instead of create
+        # This safely handles signals and manual creation
+        StudentProfile.objects.update_or_create(
             user=user,
-            grade_level=data.get('grade_level'),
-            vocabulary_proficiency=data.get('vocabulary_proficiency', 'beginner')
+            defaults={
+                'grade_level': data.get('grade_level'),
+                'vocabulary_proficiency': data.get('vocabulary_proficiency', 'beginner')
+            }
         )
 
-        # 3. Send Email
-        send_welcome_email(user, password, "Student")
+        # 4. Send Email
+        try:
+            send_welcome_email(user, password, "Student")
+        except Exception as e:
+            # Log the error but don't crash the request if email fails
+            print(f"Email failed: {e}")
 
         return Response({"message": "Student added and email sent"}, status=status.HTTP_201_CREATED)
 
@@ -141,11 +153,13 @@ class TeacherListCreateAPIView(APIView):
     @transaction.atomic
     def post(self, request):
         data = request.data
+        email = data.get('email')
         password = data.get('password')
         
+        # 1. Create the User
         user = User.objects.create_user(
-            username=data.get('email'),
-            email=data.get('email'),
+            username=email,
+            email=email,
             first_name=data.get('first_name', ''),
             last_name=data.get('last_name', ''),
             is_teacher=True
@@ -153,13 +167,15 @@ class TeacherListCreateAPIView(APIView):
         user.set_password(password)
         user.save()
 
-        TeacherProfile.objects.create(
+        # 2. Use update_or_create to prevent IntegrityErrors
+        TeacherProfile.objects.update_or_create(
             user=user,
-            grade_level=data.get('grade_level')
+            defaults={
+                'grade_level': data.get('grade_level')
+            }
         )
 
         send_welcome_email(user, password, "Teacher")
-
         return Response({"message": "Teacher added and email sent"}, status=status.HTTP_201_CREATED)
 
 class TeacherDetailAPIView(APIView):
@@ -188,160 +204,70 @@ class TeacherDetailAPIView(APIView):
         teacher = get_object_or_404(User, pk=pk, is_teacher=True)
         teacher.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
-    
 class AiAssistantConfigAPIView(APIView):
-    """
-    Handle List, Create, and Patch for AI configurations.
-    Patch uses query params: ?id=X
-    """
     permission_classes = [permissions.IsAdminUser]
 
     def get(self, request):
-        configs = AiAssistantConfigModel.objects.all()
-        serializer = AiAssistantConfigSerializer(configs, many=True)
+        # Always get the first record, or create a default one if it doesn't exist
+        config, _ = AiAssistantConfigModel.objects.get_or_create(id=1)
+        serializer = AiAssistantConfigSerializer(config)
         return Response(serializer.data)
 
     def post(self, request):
-        serializer = AiAssistantConfigSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    def patch(self, request):
-        # 1. Get ID from query parameters (?id=1)
-        config_id = request.query_params.get('id')
-        
-        if not config_id:
-            return Response(
-                {"error": "Please provide an 'id' in the query parameters. Example: ?id=1"}, 
-                status=status.HTTP_400_BAD_REQUEST
-            )
-
-        # 2. Find the object
-        config = get_object_or_404(AiAssistantConfigModel, pk=config_id)
-        
-        # 3. Partially update
+        # We use id=1 to ensure we are always editing the same single record
+        config, _ = AiAssistantConfigModel.objects.get_or_create(id=1)
         serializer = AiAssistantConfigSerializer(config, data=request.data, partial=True)
-        
         if serializer.is_valid():
             serializer.save()
-            return Response({
-                "message": "AI Assistant settings updated successfully",
-                "data": serializer.data
-            })
+            return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
 
 class PlatformConfigAPIView(APIView):
-    """
-    Manage Platform Configurations (Name, Contact Email, Support Email).
-    PATCH/DELETE operations use query params: ?id=X
-    Access: Admin Only
-    """
     permission_classes = [permissions.IsAdminUser]
 
     def get(self, request):
-        configs = PlatformConfigModel.objects.all()
-        serializer = PlatformConfigSerializer(configs, many=True)
+        config, _ = PlatformConfigModel.objects.get_or_create(id=1)
+        serializer = PlatformConfigSerializer(config)
         return Response(serializer.data)
 
     def post(self, request):
-        serializer = PlatformConfigSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    def patch(self, request):
-        # Extract ID from query params (?id=1)
-        config_id = request.query_params.get('id')
-        
-        if not config_id:
-            return Response(
-                {"error": "Please provide an 'id' in the query parameters. Example: ?id=1"}, 
-                status=status.HTTP_400_BAD_REQUEST
-            )
-
-        config = get_object_or_404(PlatformConfigModel, pk=config_id)
-        
-        # Partially update the model
+        config, _ = PlatformConfigModel.objects.get_or_create(id=1)
         serializer = PlatformConfigSerializer(config, data=request.data, partial=True)
-        
         if serializer.is_valid():
             serializer.save()
-            return Response({
-                "message": "Platform configuration updated successfully",
-                "data": serializer.data
-            })
+            return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
-    
+
 class TermsAPIView(APIView):
-    """
-    Manage Terms and Conditions.
-    GET: Public | POST/PATCH: Admin Only
-    PATCH uses query params: ?id=X
-    """
     def get_permissions(self):
-        if self.request.method == 'GET':
-            return [permissions.AllowAny()]
+        if self.request.method == 'GET': return [permissions.AllowAny()]
         return [permissions.IsAdminUser()]
 
     def get(self, request):
-        content = TermsAndConditionsModel.objects.all()
-        serializer = TermsSerializer(content, many=True)
+        obj, _ = TermsAndConditionsModel.objects.get_or_create(id=1)
+        serializer = TermsSerializer(obj)
         return Response(serializer.data)
 
     def post(self, request):
-        serializer = TermsSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    def patch(self, request):
-        obj_id = request.query_params.get('id')
-        if not obj_id:
-            return Response({"error": "ID required in query params (?id=X)"}, status=400)
-        
-        obj = get_object_or_404(TermsAndConditionsModel, pk=obj_id)
+        obj, _ = TermsAndConditionsModel.objects.get_or_create(id=1)
         serializer = TermsSerializer(obj, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-
 class PrivacyAPIView(APIView):
-    """
-    Manage Privacy Policy.
-    GET: Public | POST/PATCH: Admin Only
-    PATCH uses query params: ?id=X
-    """
     def get_permissions(self):
-        if self.request.method == 'GET':
-            return [permissions.AllowAny()]
+        if self.request.method == 'GET': return [permissions.AllowAny()]
         return [permissions.IsAdminUser()]
 
     def get(self, request):
-        content = PrivacyAndPolicyModel.objects.all()
-        serializer = PrivacySerializer(content, many=True)
+        obj, _ = PrivacyAndPolicyModel.objects.get_or_create(id=1)
+        serializer = PrivacySerializer(obj)
         return Response(serializer.data)
 
     def post(self, request):
-        serializer = PrivacySerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    def patch(self, request):
-        obj_id = request.query_params.get('id')
-        if not obj_id:
-            return Response({"error": "ID required in query params (?id=X)"}, status=400)
-        
-        obj = get_object_or_404(PrivacyAndPolicyModel, pk=obj_id)
+        obj, _ = PrivacyAndPolicyModel.objects.get_or_create(id=1)
         serializer = PrivacySerializer(obj, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()

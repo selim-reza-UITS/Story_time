@@ -1,6 +1,8 @@
 import os
 from pathlib import Path
 from dotenv import load_dotenv
+from datetime import timedelta
+
 load_dotenv()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -26,13 +28,23 @@ LOCAL_INSTALLED_APPS = [
     'django.contrib.staticfiles',
 ]
 
-THIRD_PARTY_APPS = [
-    'rest_framework',
+LOCAL_APP= [
+    "app.accounts",
+    "app.dashboard",
+    "app.story",
+    "app.students",
+    "app.teachers",
 ]
 
-INSTALLED_APPS = LOCAL_INSTALLED_APPS + THIRD_PARTY_APPS
+THIRD_PARTY_APPS = [
+    'rest_framework',
+    'corsheaders',
+]
 
+INSTALLED_APPS = LOCAL_INSTALLED_APPS + THIRD_PARTY_APPS + LOCAL_APP
+AUTH_USER_MODEL = 'accounts.User'
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -41,7 +53,9 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
-
+CORS_ALLOWED_ORIGINS = [
+    "http://10.10.13.12:5176",
+]
 ROOT_URLCONF = '_config.urls'
 
 TEMPLATES = [
@@ -108,3 +122,18 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
+
+
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+    ),
+}
+
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=60),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
+    "AUTH_HEADER_TYPES": ("Bearer",),
+}
+
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'

@@ -30,19 +30,19 @@ class AdminDashboardSerializer(serializers.Serializer):
 class AiAssistantConfigSerializer(serializers.ModelSerializer):
     class Meta:
         model = AiAssistantConfigModel
-        fields = ['id', 'assistant_name', 'ai_behaviour_settings']
+        fields = ['assistant_name', 'ai_behaviour_settings']
         
 class PlatformConfigSerializer(serializers.ModelSerializer):
     class Meta:
         model = PlatformConfigModel
-        fields = ['id', 'platform_name', 'contact_email', 'support_email']
+        fields = ['platform_name', 'contact_email', 'support_email']
         
 class TermsSerializer(serializers.ModelSerializer):
     class Meta:
         model = TermsAndConditionsModel
-        fields = ['id', 'content']
+        fields = ['content']
 
 class PrivacySerializer(serializers.ModelSerializer):
     class Meta:
         model = PrivacyAndPolicyModel
-        fields = ['id', 'content']
+        fields = ['content']
