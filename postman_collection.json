@@ -1,0 +1,610 @@
+{
+    "info": {
+        "_postman_id": "cyndi-story-telling-complete",
+        "name": "Cyndi Story Telling - Student APIs",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+        {
+            "name": "1. Login",
+            "item": [
+                {
+                    "name": "Login",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"email\": \"student@example.com\",\n    \"password\": \"password123\"\n}"
+                        },
+                        "url": "http://10.10.13.22:9900/api/v1/auth/login/"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "2. Forget Password",
+            "item": [
+                {
+                    "name": "Send OTP (Forgot Password)",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"email\": \"student@example.com\"\n}"
+                        },
+                        "url": "http://10.10.13.22:9900/api/v1/students/forgot-password/"
+                    }
+                },
+                {
+                    "name": "Verify OTP",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"email\": \"student@example.com\",\n    \"otp\": \"123456\"\n}"
+                        },
+                        "url": "http://10.10.13.22:9900/api/v1/students/verify-otp/"
+                    }
+                },
+                {
+                    "name": "Reset Password",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"email\": \"student@example.com\",\n    \"otp\": \"123456\",\n    \"new_password\": \"newpassword123\"\n}"
+                        },
+                        "url": "http://10.10.13.22:9900/api/v1/students/reset-password/"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "3. Terms & Privacy Policy",
+            "item": [
+                {
+                    "name": "Get Terms and Conditions",
+                    "request": {
+                        "method": "GET",
+                        "url": "http://10.10.13.22:9900/api/v1/students/get/terms-and-conditions/"
+                    }
+                },
+                {
+                    "name": "Get Privacy Policy",
+                    "request": {
+                        "method": "GET",
+                        "url": "http://10.10.13.22:9900/api/v1/students/get/privacy-and-policy/"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "4. Home",
+            "item": [
+                {
+                    "name": "Get Home Stats (Unfinished, Book Count, Dictionary Count, Level)",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{access_token}}"
+                            }
+                        ],
+                        "url": "http://10.10.13.22:9900/api/v1/students/home/"
+                    }
+                },
+                {
+                    "name": "Get All Saved Vocabulary",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{access_token}}"
+                            }
+                        ],
+                        "url": "http://10.10.13.22:9900/api/v1/students/vocabulary/"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "5. Library",
+            "item": [
+                {
+                    "name": "Story Feed",
+                    "item": [
+                        {
+                            "name": "Get Recommended Stories (Query: title, grade, vocab_level)",
+                            "request": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{access_token}}"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "http://10.10.13.22:9900/api/v1/stories/library/?type=recommended&title=&grade=3&vocab_level=beginner",
+                                    "protocol": "http",
+                                    "host": [
+                                        "10.10.13.22"
+                                    ],
+                                    "port": "9900",
+                                    "path": [
+                                        "api",
+                                        "v1",
+                                        "stories",
+                                        "library",
+                                        ""
+                                    ],
+                                    "query": [
+                                        {
+                                            "key": "type",
+                                            "value": "recommended"
+                                        },
+                                        {
+                                            "key": "title",
+                                            "value": ""
+                                        },
+                                        {
+                                            "key": "grade",
+                                            "value": "3"
+                                        },
+                                        {
+                                            "key": "vocab_level",
+                                            "value": "beginner"
+                                        }
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "name": "Get All Published Stories (Query: title, grade, vocab_level)",
+                            "request": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{access_token}}"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "http://10.10.13.22:9900/api/v1/stories/library/?title=&grade=&vocab_level=",
+                                    "protocol": "http",
+                                    "host": [
+                                        "10.10.13.22"
+                                    ],
+                                    "port": "9900",
+                                    "path": [
+                                        "api",
+                                        "v1",
+                                        "stories",
+                                        "library",
+                                        ""
+                                    ],
+                                    "query": [
+                                        {
+                                            "key": "title",
+                                            "value": ""
+                                        },
+                                        {
+                                            "key": "grade",
+                                            "value": ""
+                                        },
+                                        {
+                                            "key": "vocab_level",
+                                            "value": ""
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Story View",
+                    "item": [
+                        {
+                            "name": "Read Story (Pagination) - GET with page",
+                            "request": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{access_token}}"
+                                    }
+                                ],
+                                "url": "http://10.10.13.22:9900/api/v1/stories/read/1/?page=1"
+                            }
+                        },
+                        {
+                            "name": "Track Progress (Next/Finish Button)",
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{access_token}}"
+                                    },
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n    \"story_id\": 1,\n    \"current_page\": 2,\n    \"action\": \"next\"\n}"
+                                },
+                                "url": "http://10.10.13.22:9900/api/v1/stories/track/"
+                            }
+                        },
+                        {
+                            "name": "Mark Story Complete (Finish Button)",
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{access_token}}"
+                                    },
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n    \"story_id\": 1,\n    \"action\": \"finish\"\n}"
+                                },
+                                "url": "http://10.10.13.22:9900/api/v1/stories/track/"
+                            }
+                        },
+                        {
+                            "name": "Dictionary - Search Word Meaning & Voice (AI)",
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{access_token}}"
+                                    },
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n    \"word\": \"adventure\",\n    \"action\": \"lookup\"\n}"
+                                },
+                                "url": "http://10.10.13.22:9900/api/v1/stories/dictionary/"
+                            }
+                        },
+                        {
+                            "name": "Get Reading Tips (AI)",
+                            "request": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{access_token}}"
+                                    }
+                                ],
+                                "url": "http://10.10.13.22:9900/api/v1/stories/tips/"
+                            }
+                        },
+                        {
+                            "name": "Rate Story (After Finish)",
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{access_token}}"
+                                    },
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n    \"story_id\": 1,\n    \"rating\": 5\n}"
+                                },
+                                "url": "http://10.10.13.22:9900/api/v1/stories/rate/"
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "6. My Stories",
+            "item": [
+                {
+                    "name": "Editor",
+                    "item": [
+                        {
+                            "name": "Save Story (Draft - Not Publish)",
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{access_token}}"
+                                    },
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n    \"title\": \"My New Story\",\n    \"content\": \"It was a dark and stormy night...\",\n    \"is_draft\": true\n}"
+                                },
+                                "url": "http://10.10.13.22:9900/api/v1/stories/editor/"
+                            }
+                        },
+                        {
+                            "name": "Publish Story (Save + Publish)",
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{access_token}}"
+                                    },
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n    \"title\": \"My Published Story\",\n    \"content\": \"Once upon a time...\",\n    \"is_draft\": false\n}"
+                                },
+                                "url": "http://10.10.13.22:9900/api/v1/stories/editor/"
+                            }
+                        },
+                        {
+                            "name": "Chat with AI (Story Writing Help)",
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{access_token}}"
+                                    },
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n    \"message\": \"I need help describing a dragon\",\n    \"story_context\": \"My story is about a brave knight\"\n}"
+                                },
+                                "url": "http://10.10.13.22:9900/api/v1/stories/chat/owlbert/"
+                            }
+                        },
+                        {
+                            "name": "Grammar Check (AI)",
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{access_token}}"
+                                    },
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n    \"text\": \"The cat runned fast across the room.\"\n}"
+                                },
+                                "url": "http://10.10.13.22:9900/api/v1/stories/ai/realtime-check/"
+                            }
+                        },
+                        {
+                            "name": "Get My Stories List (Latest 2)",
+                            "request": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{access_token}}"
+                                    }
+                                ],
+                                "url": "http://10.10.13.22:9900/api/v1/stories/editor/?limit=2"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "My Stories View",
+                    "item": [
+                        {
+                            "name": "Get My Stories Stats (Total, Pages, Today, List)",
+                            "request": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{access_token}}"
+                                    }
+                                ],
+                                "url": "http://10.10.13.22:9900/api/v1/students/my-stories/stats/"
+                            }
+                        },
+                        {
+                            "name": "View My Story (Pagination - No Progress)",
+                            "request": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{access_token}}"
+                                    }
+                                ],
+                                "url": "http://10.10.13.22:9900/api/v1/stories/editor/1/?page=1"
+                            }
+                        },
+                        {
+                            "name": "Update/Edit Story",
+                            "request": {
+                                "method": "PATCH",
+                                "header": [
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{access_token}}"
+                                    },
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n    \"title\": \"Updated Title\",\n    \"content\": \"Updated content...\"\n}"
+                                },
+                                "url": "http://10.10.13.22:9900/api/v1/stories/editor/1/"
+                            }
+                        },
+                        {
+                            "name": "Delete Story",
+                            "request": {
+                                "method": "DELETE",
+                                "header": [
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{access_token}}"
+                                    }
+                                ],
+                                "url": "http://10.10.13.22:9900/api/v1/stories/editor/1/"
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "7. Achievement",
+            "item": [
+                {
+                    "name": "Get Achievement Stats",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{access_token}}"
+                            }
+                        ],
+                        "url": "http://10.10.13.22:9900/api/v1/students/achievements/"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "8. Profile",
+            "item": [
+                {
+                    "name": "Get Profile",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{access_token}}"
+                            }
+                        ],
+                        "url": "http://10.10.13.22:9900/api/v1/students/profile/"
+                    }
+                },
+                {
+                    "name": "Update Profile",
+                    "request": {
+                        "method": "PATCH",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{access_token}}"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"first_name\": \"John\",\n    \"last_name\": \"Doe\",\n    \"student_profile\": {\n        \"grade_level\": 4\n    }\n}"
+                        },
+                        "url": "http://10.10.13.22:9900/api/v1/students/profile/"
+                    }
+                },
+                {
+                    "name": "Logout (Track Streak)",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{access_token}}"
+                            }
+                        ],
+                        "url": "http://10.10.13.22:9900/api/v1/students/logout/"
+                    }
+                },
+                {
+                    "name": "Delete Account",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{access_token}}"
+                            }
+                        ],
+                        "url": "http://10.10.13.22:9900/api/v1/students/profile/"
+                    }
+                }
+            ]
+        }
+    ],
+    "variable": [
+        {
+            "key": "access_token",
+            "value": "YOUR_JWT_TOKEN_HERE",
+            "type": "string"
+        }
+    ]
+}

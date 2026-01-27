@@ -1,0 +1,61 @@
+services:
+  backend:
+    build: 
+      context: ./Backend
+    container_name: cyndi_backend
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - ./Backend:/app
+    ports:
+      - "9900:8000"
+    env_file:
+      - .env
+    depends_on:
+      - db
+      - redis
+      - ai-helper
+    networks:
+      - cyndi-network
+
+  ai-helper:
+    build: 
+      context: ./Ai Function Helper
+    container_name: cyndi_ai_helper
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    volumes:
+      - ./Ai Function Helper:/app
+    ports:
+      - "9901:8000"
+    env_file:
+      - .env
+    networks:
+      - cyndi-network
+
+  db:
+    image: postgres:16-alpine
+    container_name: cyndi_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=cyndi_db
+      - POSTGRES_USER=cyndi_user
+      - POSTGRES_PASSWORD=cyndi_password
+    ports:
+      - "5435:5432"
+    networks:
+      - cyndi-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: cyndi_redis
+    ports:
+      - "6377:6379"
+    networks:
+      - cyndi-network
+
+networks:
+  cyndi-network:
+    driver: bridge
+
+volumes:
+  postgres_data:

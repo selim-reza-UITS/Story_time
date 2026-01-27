@@ -1,0 +1,10 @@
+fastapi
+uvicorn
+pydantic
+langchain
+langchain-openai
+python-dotenv
+pocket-tts
+scipy
+pytest
+httpx
