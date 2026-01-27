@@ -1,4 +1,4 @@
-# Cyndi Story Telling Project
+# Cyndi Story Telling Project 🦉✨
 
 Cyndi is an interactive story-telling platform designed for students. It features an AI-powered "Owlbert" assistant that helps students write, correct grammar, and learn new words.
 
@@ -17,7 +17,7 @@ Cyndi is an interactive story-telling platform designed for students. It feature
 - **Text-to-Speech**: Pocket TTS
 - **Database**: PostgreSQL
 - **Cache**: Redis
-- **DevOps**: Docker & Docker Compose
+- **DevOps**: Docker & Makefile
 
 ---
 
@@ -27,58 +27,57 @@ Cyndi is an interactive story-telling platform designed for students. It feature
 Ensure you have the following installed:
 - [Docker](https://docs.docker.com/get-docker/)
 - [Docker Compose](https://docs.docker.com/compose/install/)
+- **Make** (standard on Linux/Mac)
 
 ### 2. Environment Setup
 The project uses a centralized `.env` file at the root.
 
-1. Create a `.env` file from the provided template or ensure it contains the following keys:
+1. Ensure the root `.env` exists and contains your `OPENAI_API_KEY`.
    ```env
-   # Django Backend
-   DJANGO_SECRET_KEY=your_secret_key
-   DATABASE_URL=postgres://cyndi_user:cyndi_password@db:5432/cyndi_db
-   REDIS_URL=redis://redis:6379/1
-   
-   # AI Helper
+   # Root .env
    OPENAI_API_KEY=your_openai_api_key
    ```
-   *Note: The project already comes with a base `.env` for development.*
 
-### 3. Run with Docker Compose
-To start the entire ecosystem (Backend, AI Helper, DB, Redis):
+### 3. Launch the Project
+Run the following commands to get everything up and running:
+
 ```bash
-docker-compose up --build
+# 1. Build and start all services (Backend, AI, DB, Redis)
+make up
+
+# 2. Populate the database with demo students, teachers, and stories
+make seed
 ```
-This will start:
+
+Once running, you can access:
 - **Backend API**: `http://localhost:9900`
 - **AI Helper API**: `http://localhost:9901`
 
-### 4. Database Seed
-To populate the database with demo students, teachers, and stories:
-```bash
-docker exec -it cyndi_backend python manage.py seed_data
-```
+---
+
+## Common Development Commands
+
+The project includes a comprehensive `Makefile` to simplify all common tasks:
+
+| Command | Description |
+| :--- | :--- |
+| `make up` | Start all services in the background |
+| `make down` | Stop all services |
+| `make seed` | Populate DB with demo data (Students, Teachers, Stories) |
+| `make logs` | View live logs from all containers |
+| `make build` | Rebuild Docker images |
+| `make migrate` | Run Django migrations manually |
+| `make shell` | Open Django interactive shell |
+| `make status` | Check service health and port mappings |
+| `make clean-all` | Full cleanup of containers, volumes, and images |
+
+Run `make help` to see a full list of available commands.
 
 ---
 
-## API Endpoints Summary
-
-### Authentication
-- `POST /api/v1/auth/login/`: User login.
-
-### Story Editor (Hierarchical)
-- `GET /api/v1/stories/editor/<id>/`: Fetch full story content.
-- `POST /api/v1/stories/editor/`: Create new story (supports images).
-- `PATCH /api/v1/stories/editor/<id>/`: Update story (supports images).
-- `DELETE /api/v1/stories/editor/<id>/`: Delete story (Student: own, Teacher/Admin: all).
-
-### Owlbert AI
-- `POST /api/v1/stories/chat/owlbert/`: Chat with Owlbert.
-- `POST /api/v1/stories/ai/realtime-check/`: Grammar/Spelling check.
-
----
-
-## Troubleshooting
-- **Owlbert not responding?**: Check if `OPENAI_API_KEY` is valid in the root `.env`.
-- **Images not loading?**: Ensure the backend container is running; media is served via `http://<host>:9900/media/`.
+## API Documentation
+Detailed API endpoints and request/response structures can be found in:
+- [API_ENDPOINTS.md](file:///home/reza/Code/Cyndi_Story_Telling/API_ENDPOINTS.md)
+- [FRONTEND_API_FLOW.md](file:///home/reza/Code/Cyndi_Story_Telling/FRONTEND_API_FLOW.md)
 
 Happy Storytelling! 🦉✨

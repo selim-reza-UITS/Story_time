@@ -29,8 +29,11 @@ up: ## Start all services
 	@echo "$(GREEN)✓ All services started$(NC)"
 	@echo "  Backend:    http://localhost:9900"
 	@echo "  AI Helper:  http://localhost:9901"
-	@echo "  PostgreSQL: localhost:5435"
-	@echo "  Redis:      localhost:6377"
+
+.PHONY: seed
+seed: ## Populate database with demo data
+	$(DOCKER_COMPOSE) exec backend python manage.py seed_data
+	@echo "$(GREEN)✓ Database seeded with demo data$(NC)"
 
 .PHONY: down
 down: ## Stop all services
